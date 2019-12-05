@@ -26,18 +26,43 @@ abstract class GameAppliedConstraint {
 	int ay;
 	GameConstraintDirection direction;
 	GameConstraintStatus check(int a, int b);
+
+	GameAppliedConstraint({
+		this.ax,
+		this.ay,
+		this.direction,
+		this.type
+	});
 }
 
 class GameConstraintGreaterThan extends GameAppliedConstraint {
-	GameConstraintType type = GameConstraintType.GreaterThan;
 	GameConstraintStatus check(int a, int b) {
-		return (a > b) ? GameConstraintStatus.OK : GameConstraintStatus.Wrong;
+		return ((a == 0) || (b == 0) || (a > b)) ? GameConstraintStatus.OK : GameConstraintStatus.Wrong;
 	}
+	GameConstraintGreaterThan({
+		ax,
+		ay,
+		direction
+	}) : super(
+		ax: ax,
+		ay: ay,
+		direction: direction,
+		type: GameConstraintType.GreaterThan
+	);
 }
 
 class GameConstraintLessThan extends GameAppliedConstraint {
-	GameConstraintType type = GameConstraintType.LessThan;
 	GameConstraintStatus check(int a, int b) {
-		return (a < b) ? GameConstraintStatus.OK : GameConstraintStatus.Wrong;
+		return ((a == 0) || (b == 0) || (a < b)) ? GameConstraintStatus.OK : GameConstraintStatus.Wrong;
 	}
+	GameConstraintLessThan({
+		ax,
+		ay,
+		direction
+	}) : super(
+		ax: ax,
+		ay: ay,
+		direction: direction,
+		type: GameConstraintType.LessThan
+	);
 }

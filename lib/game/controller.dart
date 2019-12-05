@@ -93,23 +93,27 @@ class GameController {
 		}
 		constraints.add(constraint);
 		if (constraint.direction == GameConstraintDirection.Horizontal) {
+			if (_board.horizontalConstraints[constraint.ay][constraint.ax] != null) {
+				constraints.remove(_board.horizontalConstraints[constraint.ay][constraint.ax]);
+			}
 			_board.horizontalConstraints[constraint.ay][constraint.ax] = GameConstraint(constraint.type);
 		}
 		else if (constraint.direction == GameConstraintDirection.Vertical) {
+			if (_board.verticalConstraints[constraint.ay][constraint.ax] != null) {
+				constraints.remove(_board.verticalConstraints[constraint.ay][constraint.ax]);
+			}
 			_board.verticalConstraints[constraint.ay][constraint.ax] = GameConstraint(constraint.type);
 		}
+		_boardController.add(_board);
 	}
 
 	void _checkConstraints() {
 		constraints.forEach((constraint) {
-			final tile = _board.tiles[constraint.ay][constraint.ax];
-			if (tile.value > 0) {
-				if (constraint.direction == GameConstraintDirection.Horizontal) {
-					_board.horizontalConstraints[constraint.ax][constraint.ay].status = constraint.check(tile.value, _board.tiles[constraint.ay][constraint.ax + 1].value);
-				}
-				else if (constraint.direction == GameConstraintDirection.Vertical) {
-					_board.verticalConstraints[constraint.ax][constraint.ay].status = constraint.check(tile.value, _board.tiles[constraint.ay + 1][constraint.ax].value);
-				}
+			if (constraint.direction == GameConstraintDirection.Horizontal) {
+				_board.horizontalConstraints[constraint.ay][constraint.ax].status = constraint.check(_board.tiles[constraint.ay][constraint.ax].value, _board.tiles[constraint.ay][constraint.ax + 1].value);
+			}
+			else if (constraint.direction == GameConstraintDirection.Vertical) {
+				_board.verticalConstraints[constraint.ay][constraint.ax].status = constraint.check(_board.tiles[constraint.ay][constraint.ax].value, _board.tiles[constraint.ay + 1][constraint.ax].value);
 			}
 		});
 	}

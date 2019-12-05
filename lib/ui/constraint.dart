@@ -3,14 +3,19 @@ import 'dart:math' as math;
 
 import '../game/constraint.dart';
 
-Widget _getIcon(GameConstraintType type) {
-	switch(type) {
+const Map<GameConstraintStatus, TextStyle> constraintTextStyles = {
+	GameConstraintStatus.OK: TextStyle(fontSize: 24, color: Colors.black),
+	GameConstraintStatus.Wrong: TextStyle(fontSize: 24, color: Colors.red)
+};
+
+Widget _getIcon(GameConstraint constraint) {
+	switch(constraint.type) {
 		case GameConstraintType.Equality:
-			return Text("=");
+			return Text("=", style: constraintTextStyles[constraint.status]);
 		case GameConstraintType.GreaterThan:
-			return Text(">");
+			return Text(">", style: constraintTextStyles[constraint.status]);
 		case GameConstraintType.LessThan:
-			return Text("<");
+			return Text("<", style: constraintTextStyles[constraint.status]);
 		default:
 			return Container();
 	}
@@ -24,12 +29,9 @@ class GameHorizontalConstraintUI extends StatelessWidget {
 	@override
 	Widget build(BuildContext context) {
 		return Container(
-			decoration: BoxDecoration(
-				border: Border.all(
-					color: Colors.black
-				)
-			),
-			child: _getIcon(constraint.type)
+			child: Center(
+				child: _getIcon(constraint)
+			)
 		);
 	}
 }

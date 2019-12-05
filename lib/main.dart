@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:futoshiki/game/constraint.dart';
 import 'dart:async';
 
 import 'ui/board.dart';
@@ -67,6 +68,20 @@ class _MyHomePageState extends State<MyHomePage> {
 									}
 								}
 							)
+						),
+						MaterialButton(
+							child: Text("Add constraint"),
+							onPressed: () {
+								controller.addConstraint(random.nextBool() ? GameConstraintGreaterThan(
+									ax: random.nextInt(controller.size - 1),
+									ay: random.nextInt(controller.size - 1),
+									direction: random.nextBool() ? GameConstraintDirection.Horizontal : GameConstraintDirection.Vertical
+								) : GameConstraintLessThan(
+									ax: random.nextInt(controller.size - 1),
+									ay: random.nextInt(controller.size - 1),
+									direction: random.nextBool() ? GameConstraintDirection.Horizontal : GameConstraintDirection.Vertical
+								));
+							}
 						)
 					],
 				),
