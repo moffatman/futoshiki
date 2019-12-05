@@ -1,4 +1,4 @@
-package com.example.futoshiki
+package com.moffatman.futoshiki
 
 import android.os.Bundle
 
