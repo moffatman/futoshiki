@@ -61,7 +61,9 @@ class _MyHomePageState extends State<MyHomePage> {
 								stream: controller.board,
 								builder: (BuildContext context, AsyncSnapshot<GameBoard> snapshot) {
 									if (snapshot.hasData) {
-										return GameBoardUI(snapshot.data);
+										return GameBoardUI(board: snapshot.data, onChoose: ({int x, int y, int value, GameMoveType type}) {
+											controller.playMove(GameMove(x: x, y: y, type: type, value: value));
+										});
 									}
 									else {
 										return CircularProgressIndicator();

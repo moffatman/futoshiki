@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:futoshiki/game/move.dart';
 
 import '../game/board.dart';
 
@@ -15,8 +16,9 @@ class _NoOverscrollGlowScrollBehavior extends ScrollBehavior {
 class GameBoardUI extends StatelessWidget {
 	final GameBoard board;
 	final int widgetSize;
+	final void Function({int x, int y, int value, GameMoveType type}) onChoose;
 
-	GameBoardUI(this.board) : widgetSize = ((2 * board.size) - 1);
+	GameBoardUI({this.board, this.onChoose}) : widgetSize = ((2 * board.size) - 1);
 
 	@override
 	Widget build(BuildContext context) {
@@ -33,7 +35,9 @@ class GameBoardUI extends StatelessWidget {
 					if (layoutRow % 2 == 0) {
 						// tile row
 						if (layoutColumn % 2 == 0) {
-							return GameTileUI(tile: board.tiles[gameRow][gameColumn], size: board.size);
+							return GameTileUI(tile: board.tiles[gameRow][gameColumn], size: board.size, onChoose: ({int value, GameMoveType type}) {
+								onChoose(x: gameColumn, y: gameRow, value: value, type: type);
+							});
 						}
 						else {
 							return (board.horizontalConstraints[gameRow][gameColumn] != null) ? GameHorizontalConstraintUI(board.horizontalConstraints[gameRow][gameColumn]) : Container();
