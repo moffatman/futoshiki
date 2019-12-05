@@ -7,6 +7,7 @@ enum GameTileStatus {
 class GameTile {
 	int value = 0;
 	Set<int> notes = Set<int>();
+	bool locked = false;
 	GameTileStatus get status {
 		if (errorParents.isEmpty) {
 			if (errorChildren.isEmpty) {

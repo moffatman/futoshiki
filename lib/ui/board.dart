@@ -24,7 +24,7 @@ class GameBoardUI extends StatelessWidget {
 				if (layoutRow % 2 == 0) {
 					// tile row
 					if (layoutColumn % 2 == 0) {
-						return GameTileUI(board.tiles[gameColumn][gameRow]);
+						return GameTileUI(tile: board.tiles[gameColumn][gameRow], size: board.size);
 					}
 					else {
 						return (board.horizontalConstraints[gameRow][gameColumn] != null) ? GameHorizontalConstraintUI(board.horizontalConstraints[gameRow][gameColumn]) : Container();
