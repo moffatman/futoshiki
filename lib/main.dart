@@ -54,7 +54,8 @@ class _MyHomePageState extends State<MyHomePage> {
 						Text(
 							'You have pushed the button this many times:',
 						),
-						Expanded(
+						Container(
+							margin: EdgeInsets.all(24),
 							child: StreamBuilder(
 								stream: controller.board,
 								builder: (BuildContext context, AsyncSnapshot<GameBoard> snapshot) {
