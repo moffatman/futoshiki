@@ -5,10 +5,10 @@ import 'package:futoshiki/game/move.dart';
 
 import '../game/tile.dart';
 
-const Map<GameTileStatus, TextStyle> tileTextStyles = {
-	GameTileStatus.OK: TextStyle(fontSize: 18, color: Colors.black),
-	GameTileStatus.Wrong: TextStyle(fontSize: 18, color: Colors.red),
-	GameTileStatus.WrongDependency: TextStyle(fontSize: 18, color: Colors.yellow)
+const Map<GameTileStatus, Color> tileTextColors = {
+	GameTileStatus.OK: Colors.black,
+	GameTileStatus.Wrong: Colors.red,
+	GameTileStatus.WrongDependency: Colors.yellow
 };
 
 const Map<int, List<int>> notesLayout = {
@@ -26,13 +26,15 @@ const chooserOverlaySize = 75.0;
 
 class GameTileUI extends StatefulWidget {
 	final GameTile tile;
-	final int size;
+	final int boardSize;
+	final double elementSize;
 	final void Function({int value, GameMoveType type}) onChoose;
 
 	GameTileUI({
-		this.tile,
-		this.size,
-		this.onChoose
+		@required this.tile,
+		@required this.boardSize,
+		@required this.elementSize,
+		@required this.onChoose
 	});
 
 	@override
@@ -44,7 +46,7 @@ class _GameTileUIState extends State<GameTileUI> {
 
 	Widget _buildBigNumber() {
 		return Center(
-			child: Text(widget.tile.value.toString(), style: tileTextStyles[widget.tile.status])
+			child: Text(widget.tile.value.toString(), style: TextStyle(color: tileTextColors[widget.tile.status], fontSize: widget.elementSize / 2.0))
 		);
 	}
 
@@ -53,11 +55,11 @@ class _GameTileUIState extends State<GameTileUI> {
 		return Column(
 			mainAxisSize: MainAxisSize.min,
 			mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-			children: List<Row>.generate(notesLayout[widget.size].length, (row) {
+			children: List<Row>.generate(notesLayout[widget.boardSize].length, (row) {
 				return Row(
 					mainAxisSize: MainAxisSize.max,
 					mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-					children: List<Text>.generate(notesLayout[widget.size][row], (column) {
+					children: List<Text>.generate(notesLayout[widget.boardSize][row], (column) {
 						number++;
 						return Text(widget.tile.notes.contains(number) ? number.toString() : " ");
 					})
@@ -76,16 +78,18 @@ class _GameTileUIState extends State<GameTileUI> {
 					),
 					color: widget.tile.locked ? Colors.grey : Colors.white
 				),
+				width: widget.elementSize,
+				height: widget.elementSize,
 				child: widget.tile.value > 0 ? _buildBigNumber() : _buildNotes()
 			),
 			onTap: () {
 				_chooserOverlay = _createChooserOverlay(context, GameMoveType.Play);
 				Overlay.of(context).insert(_chooserOverlay);
 			},
-			onDoubleTap: () {
+			/*onDoubleTap: () {
 				_chooserOverlay = _createChooserOverlay(context, GameMoveType.Note);
 				Overlay.of(context).insert(_chooserOverlay);
-			}
+			}*/
 		);
 	}
 
@@ -100,15 +104,15 @@ class _GameTileUIState extends State<GameTileUI> {
 				return Positioned(
 					left: offset.dx - size.width,
 					top: offset.dy - size.height,
-					width: chooserOverlaySize * notesLayout[widget.size].reduce(max),
+					width: chooserOverlaySize * notesLayout[widget.boardSize].reduce(max),
 					child: Material(
 						elevation: 4,
 						child: Column(
 							mainAxisSize: MainAxisSize.min,
-							children: List<Row>.generate(notesLayout[widget.size].length, (row) {
+							children: List<Row>.generate(notesLayout[widget.boardSize].length, (row) {
 								return Row(
 									mainAxisSize: MainAxisSize.min,
-									children: List<ChooserOverlayNumberTile>.generate(notesLayout[widget.size][row], (column) {
+									children: List<ChooserOverlayNumberTile>.generate(notesLayout[widget.boardSize][row], (column) {
 										number++;
 										return ChooserOverlayNumberTile(value: number, onChoose: _onChoose, type: type);
 									})

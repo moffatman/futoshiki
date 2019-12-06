@@ -3,34 +3,41 @@ import 'dart:math' as math;
 
 import '../game/constraint.dart';
 
-const Map<GameConstraintStatus, TextStyle> constraintTextStyles = {
-	GameConstraintStatus.OK: TextStyle(fontSize: 24, color: Colors.black),
-	GameConstraintStatus.Wrong: TextStyle(fontSize: 24, color: Colors.red)
+const Map<GameConstraintStatus, Color> constraintTextColors = {
+	GameConstraintStatus.OK: Colors.black,
+	GameConstraintStatus.Wrong: Colors.red
 };
 
-Widget _getIcon(GameConstraint constraint) {
+Widget _getIcon(GameConstraint constraint, double elementSize) {
+	final style = TextStyle(fontSize: elementSize / 2, color: constraintTextColors[constraint.status]);
 	switch(constraint.type) {
 		case GameConstraintType.Equality:
-			return Text("=", style: constraintTextStyles[constraint.status]);
+			return Text("=", style: style);
 		case GameConstraintType.GreaterThan:
-			return Text(">", style: constraintTextStyles[constraint.status]);
+			return Text(">", style: style);
 		case GameConstraintType.LessThan:
-			return Text("<", style: constraintTextStyles[constraint.status]);
+			return Text("<", style: style);
 		default:
-			return Container();
+			return Text("");
 	}
 }
 
 class GameHorizontalConstraintUI extends StatelessWidget {
 	final GameConstraint constraint;
+	final double elementSize;
 
-	GameHorizontalConstraintUI(this.constraint);
+	GameHorizontalConstraintUI({
+		@required this.constraint,
+		@required this.elementSize
+	});
 
 	@override
 	Widget build(BuildContext context) {
 		return Container(
+			width: elementSize / 2,
+			height: elementSize,
 			child: Center(
-				child: _getIcon(constraint)
+				child: _getIcon(constraint, elementSize)
 			)
 		);
 	}
@@ -38,14 +45,18 @@ class GameHorizontalConstraintUI extends StatelessWidget {
 
 class GameVerticalConstraintUI extends StatelessWidget {
 	final GameConstraint constraint;
+	final double elementSize;
 
-	GameVerticalConstraintUI(this.constraint);
+	GameVerticalConstraintUI({
+		@required this.constraint,
+		@required this.elementSize
+	});
 
 	@override
 	Widget build(BuildContext context) {
 		return Transform.rotate(
 			angle: math.pi / 2,
-			child: GameHorizontalConstraintUI(constraint)
+			child: GameHorizontalConstraintUI(constraint: constraint, elementSize: elementSize)
 		);
 	}
 }

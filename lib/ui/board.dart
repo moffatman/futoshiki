@@ -6,13 +6,6 @@ import '../game/board.dart';
 import 'constraint.dart';
 import 'tile.dart';
 
-class _NoOverscrollGlowScrollBehavior extends ScrollBehavior {
-	@override
-	Widget buildViewportChrome(BuildContext context, Widget child, AxisDirection axisDirection) {
-		return child;
-	}
-}
-
 class GameBoardUI extends StatelessWidget {
 	final GameBoard board;
 	final int widgetSize;
@@ -20,40 +13,46 @@ class GameBoardUI extends StatelessWidget {
 
 	GameBoardUI({this.board, this.onChoose}) : widgetSize = ((2 * board.size) - 1);
 
+	Widget _makeConstraintSpacer(double elementSize) {
+		return SizedBox(
+			width: elementSize / 2,
+			height: elementSize / 2
+		);
+	}
+
 	@override
 	Widget build(BuildContext context) {
-		return ScrollConfiguration(
-			behavior: _NoOverscrollGlowScrollBehavior(),
-			child: GridView.count(
-				crossAxisCount: widgetSize,
-				shrinkWrap: true,
-				children: List<Widget>.generate(widgetSize * widgetSize, (i) {
-					int layoutRow = i ~/ widgetSize;
-					int layoutColumn = i % widgetSize;
+		final elementSize = MediaQuery.of(context).size.width / 8.0;
+		return Column(
+			mainAxisSize: MainAxisSize.min,
+			children: List<Row>.generate(widgetSize, (layoutRow) => Row(
+				mainAxisSize: MainAxisSize.max,
+				mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+				children: List<Widget>.generate(widgetSize, (layoutColumn) {
 					int gameRow = layoutRow ~/ 2;
 					int gameColumn = layoutColumn ~/ 2;
 					if (layoutRow % 2 == 0) {
 						// tile row
 						if (layoutColumn % 2 == 0) {
-							return GameTileUI(tile: board.tiles[gameRow][gameColumn], size: board.size, onChoose: ({int value, GameMoveType type}) {
+							return GameTileUI(tile: board.tiles[gameRow][gameColumn], boardSize: board.size, elementSize: elementSize, onChoose: ({int value, GameMoveType type}) {
 								onChoose(x: gameColumn, y: gameRow, value: value, type: type);
 							});
 						}
 						else {
-							return (board.horizontalConstraints[gameRow][gameColumn] != null) ? GameHorizontalConstraintUI(board.horizontalConstraints[gameRow][gameColumn]) : Container();
+							return (board.horizontalConstraints[gameRow][gameColumn] != null) ? GameHorizontalConstraintUI(constraint: board.horizontalConstraints[gameRow][gameColumn], elementSize: elementSize) :_makeConstraintSpacer(elementSize);
 						}
 					}
 					else {
 						// constraint row
 						if (layoutColumn % 2 == 0) {
-							return (board.verticalConstraints[gameRow][gameColumn] != null) ? GameVerticalConstraintUI(board.verticalConstraints[gameRow][gameColumn]) : Container();
+							return (board.verticalConstraints[gameRow][gameColumn] != null) ? GameVerticalConstraintUI(constraint: board.verticalConstraints[gameRow][gameColumn], elementSize: elementSize) : _makeConstraintSpacer(elementSize);
 						}
 						else {
-							return Container();
+							return _makeConstraintSpacer(elementSize);
 						}
 					}
 				})
-			)
+			))
 		);
 	}
 }
