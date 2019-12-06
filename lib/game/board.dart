@@ -15,7 +15,7 @@ class GameBoard {
 
 	GameBoard.from(GameBoard other) : size = other.size {
 		tiles = List.generate(size, (y) => List<GameTile>.generate(size, (x) => GameTile.from(other.tiles[y][x])));
-		horizontalConstraints = List.generate(size, (y) => List<GameConstraint>.generate(size - 1, (x) => GameConstraint.from(other.horizontalConstraints[y][x])));
-		verticalConstraints = List.generate(size, (y) => List<GameConstraint>.generate(size - 1, (x) => GameConstraint.from(other.verticalConstraints[y][x])));
+		horizontalConstraints = List.generate(size, (y) => List<GameConstraint>.generate(size - 1, (x) => (other.horizontalConstraints[y][x] != null) ? GameConstraint.from(other.horizontalConstraints[y][x]) : null));
+		verticalConstraints = List.generate(size - 1, (y) => List<GameConstraint>.generate(size, (x) => (other.verticalConstraints[y][x] != null) ? GameConstraint.from(other.verticalConstraints[y][x]) : null));
 	}
 }

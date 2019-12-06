@@ -29,6 +29,7 @@ class _PuzzlePageState extends State<PuzzlePage> {
 	void initState() {
 		super.initState();
 		controller = GameController(widget.size);
+		controller.generateBoard();
 	}
 	@override
   	Widget build(BuildContext context) {
@@ -48,7 +49,7 @@ class _PuzzlePageState extends State<PuzzlePage> {
 								builder: (BuildContext context, AsyncSnapshot<GameBoard> snapshot) {
 									if (snapshot.hasData) {
 										return GameBoardUI(board: snapshot.data, onChoose: ({int x, int y, int value, GameMoveType type}) {
-											controller.playMove(GameMove(x: x, y: y, type: type, value: value));
+											controller.playMove(GameMove(x: x, y: y, type: type, value: value, locked: false));
 										});
 									}
 									else {

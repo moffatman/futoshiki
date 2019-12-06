@@ -1,3 +1,5 @@
+import 'package:meta/meta.dart';
+
 enum GameMoveType {
 	Note,
 	Play
@@ -11,9 +13,10 @@ class GameMove {
 	int value;
 
 	GameMove({
-		this.x,
-		this.y,
-		this.type,
-		this.value
+		@required this.x,
+		@required this.y,
+		@required this.type,
+		@required this.value,
+		this.locked
 	});
 }

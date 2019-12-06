@@ -43,6 +43,7 @@ class GameTileUI extends StatefulWidget {
 
 class _GameTileUIState extends State<GameTileUI> {
 	OverlayEntry _chooserOverlay;
+	bool overlayActive = false;
 
 	Widget _buildBigNumber() {
 		return Center(
@@ -68,28 +69,31 @@ class _GameTileUIState extends State<GameTileUI> {
 		);
 	}
 
+	Widget _build(BuildContext context) {
+		return Container(
+			decoration: BoxDecoration(
+				border: Border.all(
+					color: Colors.black
+				),
+				color: widget.tile.locked ? Colors.grey : Colors.white
+			),
+			width: widget.elementSize,
+			height: widget.elementSize,
+			child: widget.tile.value > 0 ? _buildBigNumber() : _buildNotes()
+		);
+	}
+
 	@override
 	Widget build(BuildContext context) {
-		return GestureDetector(
-			child: Container(
-				decoration: BoxDecoration(
-					border: Border.all(
-						color: Colors.black
-					),
-					color: widget.tile.locked ? Colors.grey : Colors.white
-				),
-				width: widget.elementSize,
-				height: widget.elementSize,
-				child: widget.tile.value > 0 ? _buildBigNumber() : _buildNotes()
-			),
+		return widget.tile.locked ? _build(context) : GestureDetector(
+			child: _build(context),
 			onTap: () {
-				_chooserOverlay = _createChooserOverlay(context, GameMoveType.Play);
-				Overlay.of(context).insert(_chooserOverlay);
-			},
-			/*onDoubleTap: () {
-				_chooserOverlay = _createChooserOverlay(context, GameMoveType.Note);
-				Overlay.of(context).insert(_chooserOverlay);
-			}*/
+				if (!overlayActive) {
+					_chooserOverlay = _createChooserOverlay(context, GameMoveType.Play);
+					Overlay.of(context).insert(_chooserOverlay);
+					overlayActive = true;
+				}
+			}
 		);
 	}
 
@@ -127,6 +131,7 @@ class _GameTileUIState extends State<GameTileUI> {
 
 	void _onChoose({int value, GameMoveType type}) {
 		_chooserOverlay.remove();
+		overlayActive = false;
 		widget.onChoose(value: value, type: type);
 	}
 }
