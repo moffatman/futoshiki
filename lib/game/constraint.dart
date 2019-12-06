@@ -8,6 +8,11 @@ class GameConstraint {
 	GameConstraintType type;
 	GameConstraintStatus status = GameConstraintStatus.OK;
 	GameConstraint(this.type);
+
+	GameConstraint.from(GameConstraint other) {
+		type = other.type;
+		status = other.status;
+	}
 }
 
 enum GameConstraintDirection {

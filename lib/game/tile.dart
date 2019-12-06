@@ -23,4 +23,14 @@ class GameTile {
 	}
 	Set<GameTile> errorParents = Set<GameTile>();
 	Set<GameTile> errorChildren = Set<GameTile>();
+
+	GameTile();
+
+	GameTile.from(GameTile other) {
+		value = other.value;
+		notes = Set.from(other.notes);
+		locked = other.locked;
+		errorParents = Set.from(other.errorParents);
+		errorChildren = Set.from(other.errorChildren);
+	}
 }
