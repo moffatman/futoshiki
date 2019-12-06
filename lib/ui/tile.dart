@@ -99,16 +99,18 @@ class _GameTileUIState extends State<GameTileUI> {
 
 	OverlayEntry _createChooserOverlay(BuildContext context, GameMoveType type) {
 		RenderBox renderBox = context.findRenderObject();
-		 final size = renderBox.size;
+		final size = renderBox.size;
 		final offset = renderBox.localToGlobal(Offset.zero);
+		final overlayWidth = chooserOverlaySize * notesLayout[widget.boardSize].reduce(max);
+		final maximumLeft = MediaQuery.of(context).size.width - overlayWidth;
 
 		return OverlayEntry(
 			builder: (context) {
 				int number = 0;
 				return Positioned(
-					left: offset.dx - size.width,
+					left: min(maximumLeft, offset.dx - size.width),
 					top: offset.dy - size.height,
-					width: chooserOverlaySize * notesLayout[widget.boardSize].reduce(max),
+					width: overlayWidth,
 					child: Material(
 						elevation: 4,
 						child: Column(
