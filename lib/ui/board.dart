@@ -22,7 +22,7 @@ class GameBoardUI extends StatelessWidget {
 
 	@override
 	Widget build(BuildContext context) {
-		final elementSize = MediaQuery.of(context).size.width / 8.0;
+		final elementSize = MediaQuery.of(context).size.width / (2 * board.size);
 		return Column(
 			mainAxisSize: MainAxisSize.min,
 			children: List<Row>.generate(widgetSize, (layoutRow) => Row(

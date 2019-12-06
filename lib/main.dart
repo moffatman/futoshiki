@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:futoshiki/game/constraint.dart';
+import 'package:futoshiki/ui/page_puzzle.dart';
 import 'dart:async';
 
 import 'ui/board.dart';
@@ -18,8 +19,9 @@ class MyApp extends StatelessWidget {
 	  		title: 'Futoshiki',
 	  		theme: ThemeData(
 				primarySwatch: Colors.blue,
+				backgroundColor: Colors.white
 	  		),
-	  		home: MyHomePage(title: 'Flutter Demo Home Page'),
+	  		home: MyHomePage(title: 'Futoshiki'),
 		);
   	}
 }
@@ -33,14 +35,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-	GameController controller;
-	Random random;
-
 	@override
 	void initState() {
 		super.initState();
-		controller = GameController(4);
-		random = Random(0);
 	}
 	@override
   	Widget build(BuildContext context) {
@@ -51,53 +48,22 @@ class _MyHomePageState extends State<MyHomePage> {
 			body: Center(
 				child: Column(
 					mainAxisAlignment: MainAxisAlignment.center,
-					children: <Widget>[
-						Text(
-							'You have pushed the button this many times:',
-						),
-						Container(
-							margin: EdgeInsets.all(24),
-							child: StreamBuilder(
-								stream: controller.board,
-								builder: (BuildContext context, AsyncSnapshot<GameBoard> snapshot) {
-									if (snapshot.hasData) {
-										return GameBoardUI(board: snapshot.data, onChoose: ({int x, int y, int value, GameMoveType type}) {
-											controller.playMove(GameMove(x: x, y: y, type: type, value: value));
-										});
-									}
-									else {
-										return CircularProgressIndicator();
-									}
-								}
-							)
-						),
-						MaterialButton(
-							child: Text("Add constraint"),
-							onPressed: () {
-								controller.addConstraint(random.nextBool() ? GameConstraintGreaterThan(
-									ax: random.nextInt(controller.size - 1),
-									ay: random.nextInt(controller.size - 1),
-									direction: random.nextBool() ? GameConstraintDirection.Horizontal : GameConstraintDirection.Vertical
-								) : GameConstraintLessThan(
-									ax: random.nextInt(controller.size - 1),
-									ay: random.nextInt(controller.size - 1),
-									direction: random.nextBool() ? GameConstraintDirection.Horizontal : GameConstraintDirection.Vertical
-								));
-							}
-						)
-					],
+					children: [2, 3, 4, 5, 6].map((size) => RaisedButton(
+						child: Text("New ${size}x${size} puzzle"),
+						onPressed: () {
+							Navigator.push(context, MaterialPageRoute(builder: (context) => PuzzlePage(size: size)));
+						}
+					)).toList(),
 				),
-			),
-			floatingActionButton: FloatingActionButton(
-				onPressed: () {
-					controller.playMove(GameMove(
-						x: random.nextInt(controller.size),
-						y: random.nextInt(controller.size),
-						type: GameMoveType.Play,
-						value: random.nextInt(controller.size) + 1
-					));
-				}
-			),
+			)
 		);
   	}
+}
+
+class NewPuzzleButton extends StatelessWidget {
+
+	@override
+	Widget build(BuildContext context) {
+
+	}
 }
