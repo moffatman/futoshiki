@@ -8,8 +8,8 @@ enum GameSolvabilityClassification {
 	ManySolutions
 }
 
-GameSolvabilityClassification classifyBoard(GameBoard board, List<GameAppliedConstraint> constraints) {
-	final b = GameBoard.from(board);
+GameSolvabilityClassification classifyBoard(GameBoard board, List<GameAppliedConstraint> constraints, bool editOriginal) {
+	final b = editOriginal ? board : GameBoard.from(board);
 	final allNumbers = List<int>.generate(board.size, (i) => i + 1);
 	final rows = b.tiles;
 	final columns = List<List<GameTile>>.generate(board.size, (x) => rows.map((row) => row[x]).toList());
@@ -23,8 +23,6 @@ GameSolvabilityClassification classifyBoard(GameBoard board, List<GameAppliedCon
 	});
 
 	for (int i = 0; i < 9999; i++) {
-		print("Classification iteration $i");
-
 		// Detect easy mistakes
 		final rowDuplicate = rows.any((row) => allNumbers.any((number) => row.where((tile) => tile.value == number).length > 1));
 		final columnDuplicate = columns.any((column) => allNumbers.any((number) => column.where((tile) => tile.value == number).length > 1));
@@ -58,21 +56,63 @@ GameSolvabilityClassification classifyBoard(GameBoard board, List<GameAppliedCon
 		});
 
 		final impossibleTiles = allTiles.where((tile) => (tile.value == 0) && (tile.notes.length == 0));
-		if (impossibleTiles.isNotEmpty) {
+		final impossibleRows = rows.where((row) => allNumbers.any((number) => row.every((tile) => (tile.value != number) && (!tile.notes.contains(number)))));
+		final impossibleColumns = columns.where((column) => allNumbers.any((number) => column.every((tile) => (tile.value != number) && (!tile.notes.contains(number)))));
+		if (impossibleTiles.isNotEmpty || impossibleRows.isNotEmpty || impossibleColumns.isNotEmpty) {
 			return GameSolvabilityClassification.NoSolution;
 		}
-		final obviousTiles = allTiles.where((tile) => (tile.value == 0) && (tile.notes.length == 1));
-		if (obviousTiles.isEmpty) {
-			return GameSolvabilityClassification.ManySolutions;
-		}
+
+		int movesMade = 0;
 
 		// Play obvious tiles
-		obviousTiles.forEach((tile) {
+		allTiles.where((tile) => (tile.value == 0) && (tile.notes.length == 1)).forEach((tile) {
 			tile.value = tile.notes.first;
+			movesMade++;
 		});
 
-		if (allTiles.where((tile) => tile.value == 0).isEmpty) {
+		rows.forEach((row) {
+			allNumbers.forEach((number) {
+				final matchingTiles = row.where((tile) => (tile.value == 0) && tile.notes.contains(number));
+				if (matchingTiles.length == 1) {
+					matchingTiles.first.value = number;
+					movesMade++;
+				}
+			});
+		});
+
+		columns.forEach((column) {
+			allNumbers.forEach((number) {
+				final matchingTiles = column.where((tile) => (tile.value == 0) && tile.notes.contains(number));
+				if (matchingTiles.length == 1) {
+					matchingTiles.first.value = number;
+					movesMade++;
+				}
+			});
+		});
+
+		final emptyTiles = allTiles.where((tile) => tile.value == 0);
+		if (emptyTiles.isEmpty) {
+			print(rows[0][0]);
 			return GameSolvabilityClassification.OneSolution;
 		}
+		else if (movesMade == 0) {
+			emptyTiles.toList().sort((a, b) => a.notes.length - b.notes.length);
+			final tileWithLeastPossibilities = emptyTiles.first;
+			for (final possibility in tileWithLeastPossibilities.notes) {
+				tileWithLeastPossibilities.value = possibility;
+				final classification = classifyBoard(b, constraints, false);
+				if (classification == GameSolvabilityClassification.OneSolution) {
+					if (editOriginal) {
+						classifyBoard(b, constraints, true);
+					}
+					return (tileWithLeastPossibilities.notes.length > 2) ? GameSolvabilityClassification.ManySolutions : GameSolvabilityClassification.OneSolution;
+				}
+				else {
+					tileWithLeastPossibilities.value = 0;
+				}
+			}
+			return GameSolvabilityClassification.NoSolution;
+		}
 	}
+	return GameSolvabilityClassification.NoSolution;
 }

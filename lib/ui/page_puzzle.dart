@@ -58,6 +58,12 @@ class _PuzzlePageState extends State<PuzzlePage> {
 								}
 							)
 						),
+						RaisedButton(
+							child: Text("Solve"),
+							onPressed: () {
+								controller.solve();
+							}
+						)
 					],
 				),
 			),

@@ -48,7 +48,7 @@ class _MyHomePageState extends State<MyHomePage> {
 			body: Center(
 				child: Column(
 					mainAxisAlignment: MainAxisAlignment.center,
-					children: [2, 3, 4, 5, 6].map((size) => RaisedButton(
+					children: [2, 3, 4, 5, 6, 7, 8, 9].map((size) => RaisedButton(
 						child: Text("New ${size}x${size} puzzle"),
 						onPressed: () {
 							Navigator.push(context, MaterialPageRoute(builder: (context) => PuzzlePage(size: size)));

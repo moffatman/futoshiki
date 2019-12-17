@@ -33,4 +33,8 @@ class GameTile {
 		errorParents = Set.from(other.errorParents);
 		errorChildren = Set.from(other.errorChildren);
 	}
+
+	String toString() {
+		return "GameTile (value: $value, notes: [${notes.join(', ')}])";
+	}
 }

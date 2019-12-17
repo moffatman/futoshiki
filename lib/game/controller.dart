@@ -48,6 +48,7 @@ class GameController {
 				parentTile.errorChildren.remove(tile);
 			});
 			tile.errorParents.clear();
+			tile.notes.clear();
 			if (tile.value == move.value) {
 				tile.value = 0;
 				tile.locked = false;
@@ -139,73 +140,63 @@ class GameController {
 
 	void generateBoard() {
 		Random random = Random();
-		for (int i = 0; i < 10000; i++) {
+		for (int i = 0; i < 10; i++) {
 			print("Iteration $i");
-			final addConstraintNow = random.nextInt(10) < 4;
-			if (addConstraintNow) {
-				if (random.nextBool()) {
-					// horizontal
-					final x = random.nextInt(size - 1);
-					final y = random.nextInt(size);
+			for (int j = 0; j < _board.size; j++) {
+				final addConstraintNow = random.nextInt(10) < (4 * pow(e, -1 * constraints.length));
+				if (addConstraintNow) {
 					if (random.nextBool()) {
-						addConstraint(GameConstraintGreaterThan(ax: x, ay: y, direction: GameConstraintDirection.Horizontal));
+						// horizontal
+						final x = random.nextInt(size - 1);
+						final y = random.nextInt(size);
+						if (random.nextBool()) {
+							addConstraint(GameConstraintGreaterThan(ax: x, ay: y, direction: GameConstraintDirection.Horizontal));
+						}
+						else {
+							addConstraint(GameConstraintLessThan(ax: x, ay: y, direction: GameConstraintDirection.Horizontal));
+						}
 					}
 					else {
-						addConstraint(GameConstraintLessThan(ax: x, ay: y, direction: GameConstraintDirection.Horizontal));
-					}
-
-					final classification = classifyBoard(_board, constraints);
-					print(classification);
-					if (classification == GameSolvabilityClassification.NoSolution) {
-						_board.horizontalConstraints[y][x] = null;
-						constraints.removeLast();
-					}
-					else if (classification == GameSolvabilityClassification.OneSolution) {
-						break;
+						// vertical
+						final x = random.nextInt(size);
+						final y = random.nextInt(size - 1);
+						if (random.nextBool()) {
+							addConstraint(GameConstraintGreaterThan(ax: x, ay: y, direction: GameConstraintDirection.Vertical));
+						}
+						else {
+							addConstraint(GameConstraintLessThan(ax: x, ay: y, direction: GameConstraintDirection.Vertical));
+						}
 					}
 				}
 				else {
-					// vertical
-					final x = random.nextInt(size);
-					final y = random.nextInt(size - 1);
-					if (random.nextBool()) {
-						addConstraint(GameConstraintGreaterThan(ax: x, ay: y, direction: GameConstraintDirection.Vertical));
-					}
-					else {
-						addConstraint(GameConstraintLessThan(ax: x, ay: y, direction: GameConstraintDirection.Vertical));
-					}
-
-					final classification = classifyBoard(_board, constraints);
-					print(classification);
-					if (classification == GameSolvabilityClassification.NoSolution) {
-						_board.verticalConstraints[y][x] = null;
-						constraints.removeLast();
-					}
-					else if (classification == GameSolvabilityClassification.OneSolution) {
-						break;
-					}
-				}
-			}
-			else {
-				final move = GameMove(
-					type: GameMoveType.Play,
-					x: random.nextInt(size),
-					y: random.nextInt(size),
-					value: random.nextInt(size) + 1,
-					locked: true
-				);
-				moves.add(move);
-				_playMove(move);
-				final classification = classifyBoard(_board, constraints);
-				print(classification);
-				if (classification == GameSolvabilityClassification.NoSolution) {
+					final move = GameMove(
+						type: GameMoveType.Play,
+						x: random.nextInt(size),
+						y: random.nextInt(size),
+						value: random.nextInt(size) + 1,
+						locked: true
+					);
+					moves.add(move);
 					_playMove(move);
 				}
-				else if (classification == GameSolvabilityClassification.OneSolution) {
-					break;
-				}
+			}
+			final classification = classifyBoard(_board, constraints, false);
+			print(classification);
+			if (classification == GameSolvabilityClassification.OneSolution) {
+				break;
+			}
+			else {
+				constraints.clear();
+				moves.clear();
+				_regenerateBoard();
 			}
 		}
 		_boardController.add(_board);
+	}
+
+	GameSolvabilityClassification solve() {
+		final classification = classifyBoard(_board, constraints, true);
+		_boardController.add(_board);
+		return classification;
 	}
 }
